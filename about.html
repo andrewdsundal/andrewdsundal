@@ -9,6 +9,72 @@
 <body>
   <h1>About Me</h1>
   <p>This is the About page for Andrew Sundal. Add your content here.</p>
+  <!-- Canvas for animation -->
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const balls = [];
+
+    for (let i = 0; i < 50; i++) {
+      balls.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: 10 + Math.random() * 10,
+        color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+        vx: (Math.random() - 0.5) * 4,
+        vy: (Math.random() - 0.5) * 4
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let ball of balls) {
+        // Move
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        // Bounce off walls
+        if (ball.x < ball.radius || ball.x > canvas.width - ball.radius) ball.vx *= -1;
+        if (ball.y < ball.radius || ball.y > canvas.height - ball.radius) ball.vy *= -1;
+
+        // Draw
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fillStyle = ball.color;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Add mouse interaction
+    canvas.addEventListener('mousemove', e => {
+      for (let ball of balls) {
+        const dx = ball.x - e.clientX;
+        const dy = ball.y - e.clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+          ball.vx += dx * 0.01;
+          ball.vy += dy * 0.01;
+        }
+      }
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
   <a href="index.html">Back to Home</a>
 </body>
 </html>
